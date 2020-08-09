@@ -6,7 +6,7 @@ from google.auth.transport.requests import Request
 
 # Need write-access scope for google sheets.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-LOCAL_PATH = '%s/Work/sheets' % (os.path.expanduser('~'))
+LOCAL_PATH = '%s/Work/ThePersonalScientist/sheets' % (os.path.expanduser('~'))
 
 def get_creds(creds_path, scopes):
     '''Get's credentials for accessing sheets through the API.'''

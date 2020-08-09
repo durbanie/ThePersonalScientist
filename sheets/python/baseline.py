@@ -39,7 +39,7 @@ def add_summary_chart(sheets_api, spreadsheet_id):
     for i in range(6):
         chart.AddLineByIndex(column=(i+1), start_row=0)
     chart.AddLegend('RIGHT_LEGEND')
-    chart.SetPosition(sheet_id=0, row_index=10, column_index=5)
+    chart.SetPositionByIndex(sheet_id=0, row_index=10, column_index=5)
     chart.AddToSpreadsheet(sheets_api, spreadsheet_id)
 
 def create_emotion_sheet(sheets_api, spreadsheet_id, emotion_column):
@@ -105,7 +105,7 @@ def main():
     add_summary_chart(sheets_api, spreadsheet_id)
     #for column in ['B', 'C', 'D', 'E', 'F', 'G']:
     #    create_emotion_sheet(sheets_api, spreadsheet_id, column)
-
+    #create_emotion_sheet(sheets_api, spreadsheet_id, 'B')
 
     # My data sheet.
     #spreadsheet_id = '1RjISLBakHtvWEpf5K432Zd0__WbOIckMx0-gGlMNBQA'

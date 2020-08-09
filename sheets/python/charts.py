@@ -108,6 +108,7 @@ class Chart:
 
   def SetPosition(self, range_name,
                   width=600, height=371, offsetX=10, offsetY=10):
+    pass
 
   def SetPositionByIndex(self, sheet_id, row_index, column_index,
                          width=600, height=371, offsetX=10, offsetY=10):
