@@ -63,6 +63,7 @@ def create_emotion_sheet(sheets_api, spreadsheet_id, emotion_column):
     }
     result = sheets_api.spreadsheets().batchUpdate(
         spreadsheetId=spreadsheet_id, body=body).execute()
+    sheet_id = result['replies'][0]['addSheet']['properties']['sheetId']
 
     # Add the data to the sheet.
     # First construct the data in the list of rows.
@@ -86,11 +87,51 @@ def create_emotion_sheet(sheets_api, spreadsheet_id, emotion_column):
     result = sheets_api.spreadsheets().values().batchUpdate(
         spreadsheetId=spreadsheet_id, body=body).execute()
 
-    # Add the stats analysis.
+    # Add the summary stats analysis.
+    def create_stats_row(stat_label, stat_formula, stat_number_format=''):
+        stat_label_value = {'userEnteredValue': {'stringValue': stat_label}}
+        stat_formula_value = {
+            'userEnteredValue': {'formulaValue': stat_formula},
+            'userEnteredFormat': {'horizontalAlignment': 'RIGHT'},
+        }
+        if stat_number_format:
+            stat_formula_value['userEnteredFormat']['numberFormat'] = {
+                'type': 'NUMBER',
+                'pattern': stat_number_format,
+            }
+        return {'values': [stat_label_value, stat_formula_value]}
+    requests = [{
+        'updateCells': {
+            'rows': [
+                create_stats_row('Range', '=E5&" - "&E6'),
+                create_stats_row('Average', '=AVERAGE(B2:B)', '#.00'),
+                create_stats_row('Standard Dev', '=STDEV(B2:B)', '#.00'),
+                create_stats_row('Minimum', '=MIN(B2:B)'),
+                create_stats_row('Maximum', '=MAX(B2:B)'),
+            ],
+            'fields': 'userEnteredValue,userEnteredFormat',
+            'start': {
+                'sheetId': sheet_id,
+                'rowIndex': 1,
+                'columnIndex': 3,
+            },
+        }
+    }]
+    result = sheets_api.spreadsheets().batchUpdate(
+        spreadsheetId=spreadsheet_id, body={'requests': requests}).execute()
 
     # Finally, add the charts.
-    
-    
+    # Add the full time-series chart.
+    chart = Chart(ChartType.LINE, title)
+    chart.AddDomainByIndex(column=0, start_row=0, sheet_id=sheet_id)
+    chart.AddLineByIndex(column=1, start_row=0, end_row=-1, sheet_id=sheet_id)
+    chart.AddLegend('RIGHT_LEGEND')
+    chart.SetPositionByIndex(sheet_id=sheet_id, row_index=8, column_index=5)
+    chart.AddToSpreadsheet(sheets_api, spreadsheet_id)
+
+    # Add the histogram.
+
+    # Print a nice message.
     print('Created sheet for %s' % title)
 
 # The main entry point.
@@ -102,10 +143,10 @@ def main():
     start_date = dt.date(2020, 7, 11)
     num_days = 20
     add_binomial_values(sheets_api, spreadsheet_id, start_date, num_days)
-    add_summary_chart(sheets_api, spreadsheet_id)
+    #add_summary_chart(sheets_api, spreadsheet_id)
     #for column in ['B', 'C', 'D', 'E', 'F', 'G']:
     #    create_emotion_sheet(sheets_api, spreadsheet_id, column)
-    #create_emotion_sheet(sheets_api, spreadsheet_id, 'B')
+    create_emotion_sheet(sheets_api, spreadsheet_id, 'B')
 
     # My data sheet.
     #spreadsheet_id = '1RjISLBakHtvWEpf5K432Zd0__WbOIckMx0-gGlMNBQA'

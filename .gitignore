@@ -1,2 +1,11 @@
+**/*~
+**/#*
+
+# exclude pycache
+sheets/python/__pycache__/*
+
 # exclude everything in creds/
-sheets/creds/*
+sheets/creds
+
+# exclude any user-defined .gitignore
+**/.gitignore
